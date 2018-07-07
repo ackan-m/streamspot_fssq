@@ -74,15 +74,16 @@ namespace std{
       quasi_heap[gid][length] = c;
     }else{//ヒープにない
       if(streamheap[gid].size == m){//heapがfullなら
-        Counter r = quasi_heap[gid][0]; //rはルートノード
+        //rootからソート
         delayedSorting(quasi_heap, streamheap, 0);
 
+        Counter r = quasi_heap[gid][0]; //rはソート後のroot
        //rootをcで置き換え
        c.item = outgoing_chunks;
-       c.error = r.cnt*decayed_rate^(t-r.ut)+1;
-       c.cnt = r.cnt*decayed_rate^(t-r.ut)+1;
+       c.error = r.cnt+1;
+       c.cnt = r.cnt+1;
        c.delay = true;
-       c.ut = heap[gid].t;
+       c.ut = streamheap[gid].t;
        quasi_heap[gid][0] = c;
 
      }else{//heapがfullでないなら
