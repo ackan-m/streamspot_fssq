@@ -6,16 +6,18 @@
 namespace std{
   void delayedSorting(Counter quasi_heap[][m], Counter heap[], int root, int gid){
     Counter c = quasi_heap[gid][root]; //サブツリーのルートカウンタ
-    c.error *= decayed_rate^(heap[gid].t-c.ut);
-    c.cnt *= decayed_rate^(heap[gid].t-c.ut) + 1;
-    c.ut = heap[gid].t;
+    c.error *= pow(DECAYED_RATE, streamheap[gid].t - c.ut);
+    c.cnt *= pow(DECAYED_RATE, streamheap[gid].t - c.ut);
+    c.ut = streamheap[gid].t;
 
     //flagが立ってなかったらsort終わり
     if(c.delay == false){
       return;
     }
     //葉ノードならreturnする
-    if(quasi_heap[gid][root*2].item == "NULL"){
+    if(2*root + 1 >= m){
+      return;
+    }else if(quasi_heap[gid][root*2+1].item == "NULL"){
       return;
     }
 
@@ -23,20 +25,28 @@ namespace std{
     delayedSorting(quasi_heap, heap, root*2+1, gid);
     delayedSorting(quasi_heap, heap, root*2+2, gid);
 
-    Counter sml;
+    Counter sml; //子ノードの小さいほう
     Counter left = quasi_heap[gid][root*2+1];
     Counter right = quasi_heap[gid][root*2+2];
+
+    //親と子を比較し交換する
     if(left.cnt > right.cnt){
       sml = right;
-      quasi_heap[gid][root*2+2]
+      if(sml.cnt < c.cnt){
+        quasi_heap[gid][root*2+2] = c;
+        quasi_heap[gid][root*2+2].delay = true;
+        quasi_heap[gid][root] = sml;
+      }
     }else{
       sml = left;
-      quasi_heap[gid][root*2+1]
+      if(sml.cnt < c.cnt){
+        quasi_heap[gid][root*2+1] = c;
+        quasi_heap[gid][root*2+1].delay = true;
+        quasi_heap[gid][root] = sml;
+      }
     }
 
-    if(c.cnt > sml.cnt){
-      quasi_heap[gid][root] = sml;
-    }
+    quasi_heap[gid][root].delay = false;
 
   }
 
