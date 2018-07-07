@@ -4,7 +4,7 @@
 #include <math.h>
 
 namespace std{
-  void delayedSorting(Counter quasi_heap[][m], Counter heap[], int root, int gid){
+  void delayedSorting(Counter quasi_heap[][m], Counter streamheap[], int root, int gid){
     Counter c = quasi_heap[gid][root]; //サブツリーのルートカウンタ
     c.error *= pow(DECAYED_RATE, streamheap[gid].t - c.ut);
     c.cnt *= pow(DECAYED_RATE, streamheap[gid].t - c.ut);
@@ -22,8 +22,8 @@ namespace std{
     }
 
     //子ノードに対してソート
-    delayedSorting(quasi_heap, heap, root*2+1, gid);
-    delayedSorting(quasi_heap, heap, root*2+2, gid);
+    delayedSorting(quasi_heap, streamheap, root*2+1, gid);
+    delayedSorting(quasi_heap, streamheap, root*2+2, gid);
 
     Counter sml; //子ノードの小さいほう
     Counter left = quasi_heap[gid][root*2+1];
