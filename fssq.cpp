@@ -53,7 +53,7 @@ namespace std{
   void ssqAlgorithm(Counter quasi_heap[][m],StreamHeap streamheap[], string outgoing_chunks,int gid){
     //現在時刻を更新
     streamheap[gid].t += 1;
-
+    cout <<"size  " << streamheap[gid].size << endl;
     //outgoing_chunkがヒープ内にあるか探す
     int length;
     for(length = 0; length < m; length++){
@@ -76,7 +76,7 @@ namespace std{
       if(streamheap[gid].size == m){//heapがfullなら
         //rootからソート
         delayedSorting(quasi_heap, streamheap, 0, gid);
-
+        cout <<"length  " << length << endl;
         Counter r = quasi_heap[gid][0]; //rはソート後のroot
        //rootをcで置き換え
        c.item = outgoing_chunks;
