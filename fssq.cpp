@@ -4,7 +4,7 @@
 #include <math.h>
 
 namespace std{
-  void delayedSorting(Counter quasi_heap[][m], Counter streamheap[], int root, int gid){
+  void delayedSorting(Counter quasi_heap[][m], StreamHeap streamheap[], int root, int gid){
     Counter c = quasi_heap[gid][root]; //サブツリーのルートカウンタ
     c.error *= pow(DECAYED_RATE, streamheap[gid].t - c.ut);
     c.cnt *= pow(DECAYED_RATE, streamheap[gid].t - c.ut);
@@ -52,7 +52,7 @@ namespace std{
 
   void ssqAlgorithm(Counter quasi_heap[][m],StreamHeap streamheap[], string outgoing_chunks,int gid){
     //現在時刻を更新
-    streaheap[gid].t += 1;
+    streamheap[gid].t += 1;
 
     //outgoing_chunkがヒープ内にあるか探す
     int length;
@@ -75,7 +75,7 @@ namespace std{
     }else{//ヒープにない
       if(streamheap[gid].size == m){//heapがfullなら
         //rootからソート
-        delayedSorting(quasi_heap, streamheap, 0);
+        delayedSorting(quasi_heap, streamheap, 0, gid);
 
         Counter r = quasi_heap[gid][0]; //rはソート後のroot
        //rootをcで置き換え
