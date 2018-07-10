@@ -2,7 +2,7 @@
 #include "param.h"
 #include <iostream>
 #include <math.h>
-//seg2だ
+//seg2だ----
 namespace std{
   void delayedSorting(Counter quasi_heap[][m], StreamHeap streamheap[], int root, int gid){
     Counter c = quasi_heap[gid][root]; //サブツリーのルートカウンタ
