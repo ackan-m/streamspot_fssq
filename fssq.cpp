@@ -5,6 +5,17 @@
 
 namespace std{
   void delayedSorting(Counter quasi_heap[][m], StreamHeap streamheap[], int root, int gid){
+    // if(root >= m){
+    //   return;
+    // }
+    //葉ノードならreturnする
+    if(2*root + 1 >= m){
+      return;
+    }
+    if(quasi_heap[gid][root*2+1].item == "NULL"){
+      return;
+    }
+
     Counter c = quasi_heap[gid][root]; //サブツリーのルートカウンタ
     c.error *= pow(DECAYED_RATE, streamheap[gid].t - c.ut);
     c.cnt *= pow(DECAYED_RATE, streamheap[gid].t - c.ut);
@@ -14,15 +25,12 @@ namespace std{
     if(c.delay == false){
       return;
     }
-    //葉ノードならreturnする
-    if(2*root + 1 >= m){
-      return;
-    }else if(quasi_heap[gid][root*2+1].item == "NULL"){
-      return;
-    }
 
     //子ノードに対してソート
     delayedSorting(quasi_heap, streamheap, root*2+1, gid);
+    // if(root*2+2 >= m){
+    //   return;//サイズがmを超えた時セグメン出る??から回避する
+    // }
     delayedSorting(quasi_heap, streamheap, root*2+2, gid);
 
     Counter sml; //子ノードの小さいほう
@@ -53,7 +61,6 @@ namespace std{
   void ssqAlgorithm(Counter quasi_heap[][m],StreamHeap streamheap[], string outgoing_chunks,int gid){
     //現在時刻を更新
     streamheap[gid].t += 1;
-    cout <<"size  " << streamheap[gid].size << endl;
     //outgoing_chunkがヒープ内にあるか探す
     int length;
     for(length = 0; length < m; length++){
