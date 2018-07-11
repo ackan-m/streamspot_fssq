@@ -3,6 +3,7 @@
 #include <iostream>
 #include <math.h>
 //segになった----
+
 namespace std{
   void delayedSorting(Counter quasi_heap[][m], StreamHeap streamheap[], int root, int gid){
     // if(root >= m){
