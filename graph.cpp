@@ -444,23 +444,31 @@ update_streamhash_sketches(const edge& e, const vector<graph>& graphs,
       projection_delta[i] -= delta;
     }
   }
-  
-  // //decayed string add
+
+  //decayed string add
+  double add_delta=0;
   for(int i =0; i < L ;i++){//スケッチサイズ
     for(int j = 0; j < streamheap[gid].size; j++) {//heap size
-        int add_delta = (int)quasi_heap[gid][j].cnt * hashmulti(quasi_heap[gid][j].item, H[i]);
-        projection[i] += add_delta;
-        projection_delta[i] += add_delta;
+        // int add_delta = (int)quasi_heap[gid][j].cnt * hashmulti(quasi_heap[gid][j].item, H[i]);
+        // projection[i] += add_delta;
+        // projection_delta[i] += add_delta; 毎回丸めてるから、全然足し算できてない説
+        add_delta += quasi_heap[gid][j].cnt * hashmulti(quasi_heap[gid][j].item, H[i]);
     }
   }
+  projection[i] += add_delta;
+  projection_delta[i] += add_delta;
   //decayed string sub
+  double sub_delta = 0;
   for(int i =0; i < L ;i++){//スケッチサイズ
     for(int j = 0; j < old_streamheap_size; j++) {//heap size
-        int sub_delta = (int)old_quasi_heap[j].cnt * hashmulti(old_quasi_heap[j].item, H[i]);
-        projection[i] -= sub_delta;
-        projection_delta[i] -= sub_delta;
+        // int sub_delta = (int)old_quasi_heap[j].cnt * hashmulti(old_quasi_heap[j].item, H[i]);
+        // projection[i] -= sub_delta;
+        // projection_delta[i] -= sub_delta;
+        sub_delta += old_quasi_heap[j].cnt * hashmulti(old_quasi_heap[j].item, H[i]);
     }
   }
+  projection[i] -= sub_delta;
+  projection_delta[i] -= sub_delta;
 
   // update sketch = sign(projection)
   for (uint32_t i = 0; i < L; i++) {
