@@ -66,7 +66,7 @@ namespace std{
     int length;
     for(length = 0; length < m; length++){
       if(quasi_heap[gid][length].item == outgoing_chunks){
-        cout << "attazo---" << endl;
+        // cout << "attazo---" << endl;
         break;
       }
     }
@@ -84,7 +84,7 @@ namespace std{
       if(streamheap[gid].size == m){//heapがfullなら
         //rootからソート
         delayedSorting(quasi_heap, streamheap, 0, gid);
-        cout <<"length  " << length << endl;
+        // cout <<"length  " << length << endl;
         Counter r = quasi_heap[gid][0]; //rはソート後のroot
        //rootをcで置き換え
        c.item = outgoing_chunks;
@@ -106,7 +106,6 @@ namespace std{
 
        //heapに挿入
        quasi_heap[gid][streamheap[gid].size-1] = c;
-       cout << "満タンじゃないよ" << endl;
      }
    }
  }
