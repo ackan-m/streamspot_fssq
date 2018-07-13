@@ -402,8 +402,8 @@ update_streamhash_sketches(const edge& e, const vector<graph>& graphs,
 
   //時間減衰を考えるところ
 
-  auto& old_quasi_heap = quasi_heap[gid];
-  auto& old_streamheap_size = streamheap[gid].size;
+  Counter old_quasi_heap[m] = quasi_heap[gid];
+  int old_streamheap_size = streamheap[gid].size;
   // cout << old_quasi_heap[0].item << endl;
 
   for (auto& c : outgoing_chunks) {
@@ -426,9 +426,8 @@ update_streamhash_sketches(const edge& e, const vector<graph>& graphs,
   // record the change in the projection vector
   // this is used to update the centroid
   vector<int> projection_delta(L, 0);
-
+  cout << projection_delta[0] << " ";
   start = chrono::steady_clock::now(); // start sketch update
-
   // update the projection vectors
   for (auto& chunk : incoming_chunks) {
     for (uint32_t i = 0; i < L; i++) {
@@ -436,40 +435,47 @@ update_streamhash_sketches(const edge& e, const vector<graph>& graphs,
       projection[i] += delta;
       projection_delta[i] += delta;
     }
-  }
+  }cout << projection_delta[0] << " ";
   for (auto& chunk : outgoing_chunks) {
     for (uint32_t i = 0; i < L; i++) {
       int delta = hashmulti(chunk, H[i]);
       projection[i] -= delta;
       projection_delta[i] -= delta;
     }
-  }
-
-  //decayed string add
-  double add_delta=0;
-  for(int i =0; i < L ;i++){//スケッチサイズ
-    for(int j = 0; j < streamheap[gid].size; j++) {//heap size
+  }cout << projection_delta[0] << " ";
+  double add_delta[L]={0};
+  double sub_delta[L] = {0};
+  for(auto& chunk : outgoing_chunks){
+    //decayed string add
+    for(int i =0; i < L ;i++){//スケッチサイズ
+      for(int j = 0; j < streamheap[gid].size; j++) {//heap size
         // int add_delta = (int)quasi_heap[gid][j].cnt * hashmulti(quasi_heap[gid][j].item, H[i]);
         // projection[i] += add_delta;
         // projection_delta[i] += add_delta; 毎回丸めてるから、全然足し算できてない説
-        add_delta += quasi_heap[gid][j].cnt * hashmulti(quasi_heap[gid][j].item, H[i]);
+        add_delta[i] += quasi_heap[gid][j].cnt * hashmulti(quasi_heap[gid][j].item, H[i]);
+      }
     }
-  }
-  projection[i] += add_delta;
-  projection_delta[i] += add_delta;
-  //decayed string sub
-  double sub_delta = 0;
-  for(int i =0; i < L ;i++){//スケッチサイズ
-    for(int j = 0; j < old_streamheap_size; j++) {//heap size
+
+    //decayed string sub
+    for(int i =0; i < L ;i++){//スケッチサイズ
+      for(int j = 0; j < old_streamheap_size; j++) {//heap size
         // int sub_delta = (int)old_quasi_heap[j].cnt * hashmulti(old_quasi_heap[j].item, H[i]);
         // projection[i] -= sub_delta;
         // projection_delta[i] -= sub_delta;
-        sub_delta += old_quasi_heap[j].cnt * hashmulti(old_quasi_heap[j].item, H[i]);
+        sub_delta[i] += old_quasi_heap[j].cnt * hashmulti(old_quasi_heap[j].item, H[i]);
+      }
     }
   }
-  projection[i] -= sub_delta;
-  projection_delta[i] -= sub_delta;
-
+  if(gid == 3){
+    cout << add_delta[0]<< " ";
+    cout << sub_delta[0] << " ";
+  }
+  for(int i=0;i<L;i++){
+    projection[i] += add_delta[i];
+    projection_delta[i] += add_delta[i];
+    projection[i] -= sub_delta[i];
+    projection_delta[i] -= sub_delta[i];
+  }cout << projection_delta[0] << endl;
   // update sketch = sign(projection)
   for (uint32_t i = 0; i < L; i++) {
     sketch[i] = projection[i] >= 0 ? 1 : 0;
