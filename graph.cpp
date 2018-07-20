@@ -426,7 +426,7 @@ update_streamhash_sketches(const edge& e, const vector<graph>& graphs,
   // record the change in the projection vector
   // this is used to update the centroid
   vector<int> projection_delta(L, 0);
-  cout << projection_delta[0] << " ";
+  // cout << projection_delta[0] << " ";
   start = chrono::steady_clock::now(); // start sketch update
   // update the projection vectors
   for (auto& chunk : incoming_chunks) {
@@ -435,14 +435,15 @@ update_streamhash_sketches(const edge& e, const vector<graph>& graphs,
       projection[i] += delta;
       projection_delta[i] += delta;
     }
-  }cout << projection_delta[0] << " ";
+  }
+  // cout << projection_delta[0] << " ";
   for (auto& chunk : outgoing_chunks) {
     for (uint32_t i = 0; i < L; i++) {
       int delta = hashmulti(chunk, H[i]);
       projection[i] -= delta;
       projection_delta[i] -= delta;
     }
-  }cout << projection_delta[0] << " ";
+  }
   double add_delta[L]={0};
   double sub_delta[L] = {0};
   for(auto& chunk : outgoing_chunks){
@@ -467,9 +468,10 @@ update_streamhash_sketches(const edge& e, const vector<graph>& graphs,
     }
   }
   if(gid == 3){
+    cout << projection_delta[0] << " ";
     cout << add_delta[0]<< " ";
     cout << sub_delta[0] << " ";
-  }
+
   for(int i=0;i<L;i++){
     projection[i] += add_delta[i];
     projection_delta[i] += add_delta[i];
@@ -480,7 +482,7 @@ update_streamhash_sketches(const edge& e, const vector<graph>& graphs,
   for (uint32_t i = 0; i < L; i++) {
     sketch[i] = projection[i] >= 0 ? 1 : 0;
   }
-
+}
   end = chrono::steady_clock::now(); // end sketch update
   sketch_update_time = chrono::duration_cast<chrono::microseconds>(end - start);
 
