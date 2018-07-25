@@ -401,27 +401,27 @@ update_streamhash_sketches(const edge& e, const vector<graph>& graphs,
 #endif
 
   //時間減衰を考えるところ
-
   Counter old_quasi_heap[m] = quasi_heap[gid];
   int old_streamheap_size = streamheap[gid].size;
-  // cout << old_quasi_heap[0].item << endl;
-
+  // if(gid==24){
+  // for(int i=0; i<old_streamheap_size; i++){
+  //   cout << old_quasi_heap[i].item << " ";
+  // }cout << endl;
+  // for(int i=0; i<old_streamheap_size; i++){
+  //   cout << old_quasi_heap[i].cnt << " ";
+  // }cout << endl;
+  // for(int i=0; i<old_streamheap_size; i++){
+  //   cout << old_quasi_heap[i].delay << " ";
+  // }cout << endl << endl;
+// }
   for (auto& c : outgoing_chunks) {
-    // cout << c << endl;
-    // cout << gid << " "<< quasi_heap[gid][0].item << endl;
-    ssqAlgorithm(quasi_heap, streamheap, c, gid);
-    // cout << gid << " "<< quasi_heap[gid][0].item << endl;
-    // if(gid == 3){
-    //   cout << "[" ;
-    //   for(int j=0; j < m ;j++){
-    //     cout << quasi_heap[gid][j].cnt << ",";
-    //   }
-    //   cout << "]" << endl;
+    // ssqAlgorithm(quasi_heap, streamheap, c, gid);
+    // if(gid==24){
+    //     cout << c << endl;
     // }
+    ssqAlgorithm(quasi_heap, streamheap, c, gid);
   }
-  // ssqAlgorithm(quasi_heap, streamheap, outgoing_chunks[0], gid);
-  // cout << "gid" << gid << endl;
-  //ここまで時間減衰考える
+  // //ここまで時間減衰考える
 
   // record the change in the projection vector
   // this is used to update the centroid
@@ -444,8 +444,8 @@ update_streamhash_sketches(const edge& e, const vector<graph>& graphs,
       projection_delta[i] -= delta;
     }
   }
-  double add_delta[L]={0};
-  double sub_delta[L] = {0};
+  double add_delta[L]={};
+  double sub_delta[L] = {};
   for(auto& chunk : outgoing_chunks){
     //decayed string add
     for(int i =0; i < L ;i++){//スケッチサイズ
@@ -467,22 +467,24 @@ update_streamhash_sketches(const edge& e, const vector<graph>& graphs,
       }
     }
   }
-  if(gid == 3){
-    cout << projection_delta[0] << " ";
-    cout << add_delta[0]<< " ";
-    cout << sub_delta[0] << " ";
-
+  // if(gid == 3){
+  //   cout << projection_delta[0] << " ";
+  //   cout << add_delta[0]<< " ";
+  //   cout << sub_delta[0] << " ";
+  //
   for(int i=0;i<L;i++){
-    projection[i] += add_delta[i];
-    projection_delta[i] += add_delta[i];
-    projection[i] -= sub_delta[i];
-    projection_delta[i] -= sub_delta[i];
-  }cout << projection_delta[0] << endl;
+    projection[i] += add_delta[i] - sub_delta[i];
+    // projection_delta[i] += add_delta[i] - sub_delta[i];
+    // projection[i] -= sub_delta[i];
+    // projection_delta[i] -= sub_delta[i];
+  }
+  // cout << projection_delta[0] << endl;
+
   // update sketch = sign(projection)
   for (uint32_t i = 0; i < L; i++) {
     sketch[i] = projection[i] >= 0 ? 1 : 0;
   }
-}
+// }
   end = chrono::steady_clock::now(); // end sketch update
   sketch_update_time = chrono::duration_cast<chrono::microseconds>(end - start);
 

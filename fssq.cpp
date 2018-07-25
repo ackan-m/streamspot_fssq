@@ -2,13 +2,18 @@
 #include "param.h"
 #include <iostream>
 #include <math.h>
-//segになった----
 
 namespace std{
   void delayedSorting(Counter quasi_heap[][m], StreamHeap streamheap[], int root, int gid){
-    // if(root >= m){
-    //   return;
-    // }
+
+    Counter c = quasi_heap[gid][root]; //サブツリーのルートカウンタ
+    c.error *= pow(DECAYED_RATE, streamheap[gid].t - c.ut);
+    // cout << c.cnt << " " << DECAYED_RATE << " " << streamheap[gid].t << " " << c.ut << " ";
+    c.cnt *= pow(DECAYED_RATE, streamheap[gid].t - c.ut);
+    // cout << c.cnt << endl;
+    c.ut = streamheap[gid].t;
+    quasi_heap[gid][root] = c;
+
     //葉ノードならreturnする
     if(2*root + 1 >= m){
       return;
@@ -17,11 +22,6 @@ namespace std{
       return;
     }
 
-    Counter c = quasi_heap[gid][root]; //サブツリーのルートカウンタ
-    c.error *= pow(DECAYED_RATE, streamheap[gid].t - c.ut);
-    c.cnt *= pow(DECAYED_RATE, streamheap[gid].t - c.ut);
-    c.ut = streamheap[gid].t;
-
     //flagが立ってなかったらsort終わり
     if(c.delay == false){
       return;
@@ -29,9 +29,6 @@ namespace std{
 
     //子ノードに対してソート
     delayedSorting(quasi_heap, streamheap, root*2+1, gid);
-    // if(root*2+2 >= m){
-    //   return;//サイズがmを超えた時セグメン出る??から回避する
-    // }
     delayedSorting(quasi_heap, streamheap, root*2+2, gid);
 
     Counter sml; //子ノードの小さいほう
@@ -75,7 +72,7 @@ namespace std{
     if(length < m){//ヒープにある
       c = quasi_heap[gid][length];
       c.error *= pow(DECAYED_RATE, streamheap[gid].t - c.ut);
-      c.cnt = c.cnt * pow(DECAYED_RATE, streamheap[gid].t - c.ut) + 1;
+      c.cnt = c.cnt * pow(DECAYED_RATE, streamheap[gid].t - c.ut) + 0.5;
       c.delay = true;
       c.ut = streamheap[gid].t;
       //heap内のカウンタ更新
@@ -88,8 +85,8 @@ namespace std{
         Counter r = quasi_heap[gid][0]; //rはソート後のroot
        //rootをcで置き換え
        c.item = outgoing_chunks;
-       c.error = r.cnt+1;
-       c.cnt = r.cnt+1;
+       c.error = r.cnt+0.5;
+       c.cnt = r.cnt+0.5;
        c.delay = true;
        c.ut = streamheap[gid].t;
        quasi_heap[gid][0] = c;
@@ -100,8 +97,8 @@ namespace std{
 
        c.item = outgoing_chunks;
        c.error = 0;
-       c.cnt = 1;
-       c.delay = false;
+       c.cnt = 0.5;
+       c.delay = true;
        c.ut = streamheap[gid].t;
 
        //heapに挿入
@@ -109,4 +106,35 @@ namespace std{
      }
    }
  }
+
+ void ssqPointer(Counter *qh[][m], StreamHeap *sh[]){
+   cout << qh[0][0]->cnt << endl;
+  //  qh[0][0]->cnt += 1;
+  //  cout << qh[0][0]->cnt << endl;
+  cout << sh[0]->size << endl;
+ }
+
+
+ void CounterInit(Counter qh[][m], vector<uint32_t> test_gids){
+   cout << "222" << endl;
+   for(auto& gid : test_gids){
+     for(int i=0; i<m ;i++){
+       cout << gid << endl;
+       cout << "あいうえお" << endl;
+       qh[gid][i].item = "かきくけこ";
+      //  cout << (qh[gid][i])->item <<  endl;
+      //  qh[gid][i]->ut = 0;
+      //  qh[gid][i]-> error = 0;
+      //  qh[gid][i]->delay = false;
+     }
+   }
+
+ }
+
+ void StreamHeapInit(StreamHeap sh[]){
+   cout << sh[0].t << endl;
+   sh[0].t = 100;
+   cout << sh[0].t << endl;
+ }
+
 }
